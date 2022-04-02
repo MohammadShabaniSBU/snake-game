@@ -21,14 +21,19 @@
                 <button @click="tryAgain" class="btn btn-red">Try Again</button>
               </div>
             </div>
+            <div v-else-if="status == 'lost'">
+              <div class="flex-grow">
+                <button @click="tryAgain" class="btn btn-red">Try Again</button>
+              </div>
+            </div>
         </div>
         <div class="my-4 text-center text-2xl font-bold">
           Score: <span>{{ score }}</span>
         </div>
         <div v-for="i in width" :key="i">
           <div class="flex g-3">
-              <div v-for="j in width" :key="j" class="w-7 h-7" :class="{'bg-green-400': (counter) % 2 == 0, 'bg-green-600': (counter++) % 2 == 1}">
-                <div :id="'c' + i + j" class="w-full h-full relative">
+              <div v-for="j in width" :key="j" class="w-7 h-7" :class="{'bg-pink-400': (counter) % 2 == 0, 'bg-pink-600': (counter++) % 2 == 1}">
+                <div :id="'c' + (100 * i) + j" class="w-full h-full relative">
                   <div>
                     <div></div>
                   </div>
@@ -54,7 +59,7 @@ export default {
       table: 17,
       score: 0,
       interval: null,
-      intervalTime: 300,
+      intervalTime: 100,
       dir: '',
       snake: {
         squares: [],
@@ -112,18 +117,25 @@ export default {
         this.putFood()
 
       }
+
+      if (this.isLost()) {
+        this.stop();
+        this.status = 'lost';
+
+      }
+
     },
 
     makeId(cell) {
-      return 'c' + cell.x + cell.y;
+      return 'c' + (100 * cell.x) + cell.y;
     },
 
     addBody(cell) {
-      document.getElementById(this.makeId(cell)).classList.add('bg-red-500', 'rounded-full')
+      document.getElementById(this.makeId(cell)).classList.add('bg-yellow-200', 'rounded-full')
     },
 
     deleteBody(cell) {
-      document.getElementById(this.makeId(cell)).classList.remove('bg-red-500', 'rounded-full')
+      document.getElementById(this.makeId(cell)).classList.remove('bg-yellow-200', 'rounded-full')
     },
 
     addHead(cell) {
@@ -137,7 +149,7 @@ export default {
     },
 
     deleteFood(cell) {
-      document.getElementById(this.makeId(cell)).classList.remove('bg-yellow-500')
+      document.getElementById(this.makeId(cell)).classList.remove('bg-blue-500')
     },
 
     moveCell(cell, next) {
@@ -209,7 +221,7 @@ export default {
         x: x,
         y: y
       };
-      document.getElementById('c' + x + y).classList.add('bg-yellow-500');
+      document.getElementById('c' + (100 * x) + y).classList.add('bg-blue-500');
     },
 
     firstStart() {
@@ -268,6 +280,16 @@ export default {
 
       this.firstStart();
       this.status = 'start';
+    },
+
+    isLost() {
+      let head = this.snake.squares[0];
+      for (let i = 1; i < this.snake.squares.length; i++) {
+        if (head.x == this.snake.squares[i].x && head.y == this.snake.squares[i].y) {
+          return true;
+        }
+      }
+      return false;
     }
   }
 }
